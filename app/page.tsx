@@ -1,65 +1,110 @@
-import Image from "next/image";
+'use client';
+
+import { useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+
+// Register the ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
+  const containerRef = useRef<HTMLElement | null>(null);
+  const headlineRef = useRef<HTMLHeadingElement | null>(null);
+  const statsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const carRef = useRef<HTMLDivElement | null>(null);
+
+  useGSAP(() => {
+    // 1. Initial Load Animation
+    const tl = gsap.timeline();
+
+    tl.from(headlineRef.current, {
+      y: -40,
+      opacity: 0,
+      duration: 1.2,
+      ease: 'power3.out',
+    });
+
+    tl.from(statsRef.current, {
+      y: 30,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.15,
+      ease: 'back.out(1.7)', 
+    }, "-=0.6");
+
+    tl.from(carRef.current, {
+      opacity: 0,
+      x: -50,
+      duration: 1.2,
+      ease: 'power2.out',
+    }, "-=0.8");
+
+    // 2. Scroll-Based Animation (Fixed screen, moving car)
+    gsap.to(carRef.current, {
+      x: '100vw', // Move car across the screen
+      ease: 'none', 
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: 'top top',
+        // This is the magic! It creates 1500px of invisible scroll space 
+        // to scrub through the animation while the screen remains pinned.
+        end: '+=1500', 
+        scrub: 1, 
+        pin: true, 
+      },
+    });
+  }, { scope: containerRef });
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    // Set to h-screen. GSAP will automatically handle the scrollbar height for us.
+    <main ref={containerRef} className="relative w-full h-screen bg-slate-50 text-slate-900 overflow-hidden font-sans">
+      
+      {/* Subtle Grid Background Pattern */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+      
+      {/* Hero Section */}
+      <section className="h-full w-full flex flex-col justify-center items-center relative pt-10 z-10">
+        
+        {/* Headline */}
+        <h1 
+          ref={headlineRef} 
+          className="text-5xl md:text-7xl font-black tracking-[0.3em] md:tracking-[0.5em] text-center ml-4 mb-16 text-slate-800 drop-shadow-sm"
+        >
+          WELCOME ITZ FIZZ
+        </h1>
+
+        {/* Impact Metrics */}
+        <div className="flex flex-wrap justify-center gap-6 md:gap-12 text-center z-10 px-4">
+          {[
+            { value: '98%', label: 'Performance' },
+            { value: '100%', label: 'Fluidity' },
+            { value: '24/7', label: 'Smoothness' },
+          ].map((stat, index) => (
+            <div 
+              key={index} 
+              ref={(el) => { statsRef.current[index] = el; }} 
+              className="flex flex-col items-center p-6 bg-white/70 backdrop-blur-md rounded-2xl shadow-xl border border-white/40 min-w-[160px]"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              <span className="text-4xl md:text-5xl font-extrabold text-indigo-600 mb-2 drop-shadow-sm">{stat.value}</span>
+              <span className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-slate-500">{stat.label}</span>
+            </div>
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Scrollable Visual Element (Car) */}
+        <div 
+          ref={carRef} 
+          className="absolute bottom-10 md:bottom-20 left-[-20%] w-[350px] md:w-[600px] drop-shadow-2xl"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img 
+            src="/car.png" 
+            alt="Scrolling Car" 
+            className="w-full h-auto object-contain"
+          />
         </div>
-      </main>
-    </div>
+      </section>
+    </main>
   );
 }
