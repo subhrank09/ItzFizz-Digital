@@ -99,7 +99,7 @@ export default function Home() {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img 
-            src="/ItzFizz-Digital/car.png" 
+            src="/car.png" 
             alt="Scrolling Car" 
             className="w-full h-auto object-contain"
           />
