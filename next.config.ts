@@ -5,11 +5,9 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  // ADD YOUR EXACT REPOSITORY NAME HERE
-  // For example, if your repo is github.com/subhrank/car-animation
-  // This should be basePath: '/car-animation',
-  basePath: '/ItzFizz-Digital', 
-  assetPrefix: '/ItzFizz-Digital/', // Add this line too to be extra safe
+  // Notice there are NO slashes before basePath and assetPrefix now!
+  basePath: '/ItzFizz-Digital',
+  assetPrefix: '/ItzFizz-Digital/',
 };
 
 export default nextConfig;
